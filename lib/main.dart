@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_exam/provider/product_provider.dart';
 import 'package:mobile_app_exam/screens/main_screen.dart';
+import 'package:mobile_app_exam/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -33,6 +34,9 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
         ),
         home: const MainScreen(),
+        routes: {
+          ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen()
+        },
       ),
     );
   }

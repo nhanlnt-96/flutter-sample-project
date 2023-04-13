@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_exam/provider/product_provider.dart';
 import 'package:mobile_app_exam/widgets/product_grid.dart';
+import 'package:mobile_app_exam/widgets/product_list_view_widget.dart';
 import 'package:provider/provider.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -37,6 +38,6 @@ class _HomeWidget extends State<HomeWidget> {
                   color: Colors.black,
                 ),
               )
-            : const ProductGrid());
+            : const ProductListViewWidget());
   }
 }

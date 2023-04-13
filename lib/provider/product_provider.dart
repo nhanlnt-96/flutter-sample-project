@@ -8,6 +8,8 @@ class ProductProvider with ChangeNotifier {
   final String productApiEndpoint = 'https://fakestoreapi.com/products';
   List<Product> _productList = [];
   List<Product> _searchProductResult = [];
+  final List<Product> _wishList = [];
+  List<Product> _cartList = [];
 
   List<Product> get productList {
     return [..._productList];
@@ -15,6 +17,25 @@ class ProductProvider with ChangeNotifier {
 
   List<Product> get searchProductResult {
     return [..._searchProductResult];
+  }
+
+  List<Product> get productWishList {
+    return [..._wishList];
+  }
+
+  List<Product> get cartList {
+    return [..._cartList];
+  }
+
+  double get totalCart {
+    double total = 0.0;
+    if (_cartList.isNotEmpty) {
+      for (var item in _cartList) {
+        total += item.price;
+      }
+    }
+
+    return total;
   }
 
   Future<void> fetchProductList() async {
@@ -40,6 +61,10 @@ class ProductProvider with ChangeNotifier {
     }
   }
 
+  Product findById(int productId) {
+    return _productList.firstWhere((product) => product.productId == productId);
+  }
+
   void resetSearch() {
     _searchProductResult = [];
 
@@ -59,5 +84,52 @@ class ProductProvider with ChangeNotifier {
     } else {
       resetSearch();
     }
+  }
+
+  bool checkProductInWishListData(int productId) {
+    return _wishList
+        .where((product) => product.productId == productId)
+        .isNotEmpty;
+  }
+
+  void addToWishList(int productId) {
+    final productData = findById(productId);
+    if (checkProductInWishListData(productId)) {
+      _wishList.removeWhere((product) => product.productId == productId);
+    } else {
+      _wishList.add(Product(
+          productId: productData.productId,
+          title: productData.title,
+          price: productData.price,
+          description: productData.description,
+          category: productData.category,
+          image: productData.image));
+    }
+
+    notifyListeners();
+  }
+
+  void addToCart(int productId) {
+    final productData = findById(productId);
+    _cartList.add(Product(
+        productId: productData.productId,
+        title: productData.title,
+        price: productData.price,
+        description: productData.description,
+        category: productData.category,
+        image: productData.image));
+
+    notifyListeners();
+  }
+
+  void removeFromCart(int productIndex) {
+    _cartList.removeAt(productIndex);
+
+    notifyListeners();
+  }
+
+  void clearCart() {
+    _cartList = [];
+    notifyListeners();
   }
 }

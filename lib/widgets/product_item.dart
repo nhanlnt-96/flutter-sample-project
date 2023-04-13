@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_exam/models/product.dart';
+import 'package:mobile_app_exam/provider/product_provider.dart';
+import 'package:mobile_app_exam/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
@@ -8,8 +10,27 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = context.read<Product>();
+    final productProvider = context.read<ProductProvider>();
+
+    void addToWishlist() {
+      productProvider.addToWishList(product.productId);
+      if (productProvider.checkProductInWishListData(product.productId)) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Added ${product.title} to wishlist'),
+            duration: const Duration(seconds: 2)));
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Removed ${product.title} from wishlist'),
+            duration: const Duration(seconds: 2)));
+      }
+    }
+
     return GestureDetector(
-      onTap: () {},
+      onTap: () => Navigator.of(context).pushNamed(
+          ProductDetailScreen.routeName,
+          arguments: product.productId),
       child: SizedBox(
         width: 150,
         child: Column(
@@ -48,12 +69,16 @@ class ProductItem extends StatelessWidget {
                             const BorderRadius.all(Radius.circular(10)),
                         color: Colors.grey.withOpacity(0.8)),
                     child: IconButton(
-                      icon: const Icon(
-                        Icons.favorite_outline,
+                      icon: Icon(
+                        context
+                                .watch<ProductProvider>()
+                                .checkProductInWishListData(product.productId)
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
                         color: Colors.white,
                       ),
                       hoverColor: Colors.white.withOpacity(0),
-                      onPressed: () {},
+                      onPressed: addToWishlist,
                     ),
                   ),
                 ),

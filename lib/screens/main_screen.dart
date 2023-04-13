@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_exam/provider/product_provider.dart';
+import 'package:mobile_app_exam/widgets/cart_widget.dart';
 import 'package:mobile_app_exam/widgets/home_widget.dart';
 import 'package:mobile_app_exam/widgets/search_product_appbar_widget.dart';
+import 'package:mobile_app_exam/widgets/wishlist_widget.dart';
+import 'package:provider/provider.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -11,35 +15,56 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreen extends State<MainScreen> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  static const List<Widget> _appBarTitle = <Widget>[
+    SearchProductAppbarWidget(),
+    CartWidgetAppbar(),
+    WishListWidgetAppbar()
+  ];
+
   static const List<Widget> _widgetOptions = <Widget>[
     HomeWidget(),
+    CartWidget(),
+    WishListWidget()
   ];
 
   void _onItemTapped(int index) {
-    if (index == 0) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const SearchProductAppbarWidget(),
+        title: _appBarTitle.elementAt(_selectedIndex),
+        centerTitle: true,
       ),
       body: Center(
         child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+        items: <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart), label: 'Cart'),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Saved')
+              icon: Badge(
+                  label: Text(context
+                      .watch<ProductProvider>()
+                      .cartList
+                      .length
+                      .toString()),
+                  child: const Icon(Icons.shopping_cart)),
+              label: 'Cart'),
+          BottomNavigationBarItem(
+              icon: Badge(
+                  label: Text(context
+                      .watch<ProductProvider>()
+                      .productWishList
+                      .length
+                      .toString()),
+                  child: const Icon(Icons.favorite)),
+              label: 'Wishlist')
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.blue,
